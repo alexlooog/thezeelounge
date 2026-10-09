@@ -1,26 +1,173 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Bränd: must / valge / oranž — aga viimistletud, mitte neoon. Referentsina
+ * kasutasime thegoldencuts.com't (kliendi soovitud stiilinäide): must taust,
+ * suureformaadiline Playfair Display pealkirjakiri, soe pronks/kuld-oranž
+ * aktsent ja kapsel-kujulised (pill) nupud. Meie oranž (#c1802c) on
+ * soojem/tumedam kui algne #ff7a1a, et saavutada sama "premium", mitte
+ * "neoon" tunnetus, jäädes samas selgelt oranžiks, mitte kollaseks kullaks.
+ */
+@theme {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-playfair), Georgia, serif;
+
+  --color-ink: #050403;
+  --color-ink-raised: #0f0c09;
+  --color-ink-sunk: #000000;
+
+  --color-paper: #f5f1e8;
+  --color-paper-2: #b7ac99;
+  --color-paper-3: #7c7263;
+
+  --color-line: rgba(245, 241, 232, 0.12);
+  --color-line-strong: rgba(245, 241, 232, 0.22);
+
+  --color-accent: #c1802c;
+  --color-accent-2: #e0a34f;
+  --color-accent-wash: rgba(193, 128, 44, 0.14);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    color-scheme: dark;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background-color: var(--color-accent);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+    font-family: var(--font-display);
+    font-weight: 700;
+  }
+
+  p {
+    text-wrap: pretty;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* Peen ruudustik-tekstuur taustale — annab sügavust ilma fotota. */
+@utility grid-texture {
+  background-image:
+    linear-gradient(to right, var(--color-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--color-line) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* Diagonaalne oranž triibumuster — barberi-posti vihje ilma sõna otseses mõttes postita. */
+@utility stripe-accent {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--color-accent) 0px,
+    var(--color-accent) 2px,
+    transparent 2px,
+    transparent 14px
+  );
+}
+
+/*
+ * "Foto asemel" moodne taustapaneel — pehme oranž hõõguv gradient + peen
+ * müra (grain), et hero ja pildita paneelid ei jääks lapikuks.
+ */
+@utility grain-panel {
+  background-image:
+    radial-gradient(ellipse 60% 50% at 30% 20%, var(--color-accent-wash) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 60% at 85% 80%, rgba(193, 128, 44, 0.1) 0%, transparent 55%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+}
+
+/* Kapsel-kujuline (pill) esmane CTA — täidetud oranž, must tekst. */
+@utility btn-pill-solid {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background-color: var(--color-accent);
+  color: var(--color-ink);
+  padding: 0.875rem 1.75rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btn-pill-solid:hover {
+  background-color: var(--color-accent-2);
+  transform: translateY(-1px);
+}
+
+/* Kapsel-kujuline (pill) teisene CTA — piirjoonega. */
+@utility btn-pill-outline {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  border: 1px solid var(--color-line-strong);
+  color: var(--color-paper);
+  padding: 0.875rem 1.75rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  transition:
+    border-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.btn-pill-outline:hover {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  transform: translateY(-1px);
+}
+
+@keyframes marquee-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee-scroll 26s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
